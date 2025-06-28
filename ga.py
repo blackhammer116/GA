@@ -35,12 +35,8 @@ def initialize_population():
     return [np.random.uniform(0, 1, GENES).tolist() for _ in range(POP_SIZE)]
 
 # === Selection: Roulette-Wheel via Stochastic Acceptance ===
-def roulette_stochastic_acceptance(population, fitnesses):
-    w_max = max(fitnesses)
-    while True:
-        i = random.randint(0, len(population) - 1)
-        if random.random() < fitnesses[i] / w_max:
-            return population[i]
+def selection(population, fitnesses):
+    pass
 
 # === Crossover: Simulated Binary Crossover (Adaptive Eta) ===
 def sbx_crossover(p1, p2, eta):
@@ -87,12 +83,12 @@ def genetic_algorithm():
 
     for gen in range(GENERATIONS):
         fitnesses = [fitness(ind) for ind in population]
-        elites = sorted(zip(population, fitnesses), key=lambda x: x[1], reverse=True)[:ELITE_COUNT]
+        elites = sorted(zip(population, fitnesses), key=lambda x: x[1], reverse=True    )[:ELITE_COUNT]
         new_population = [ind for ind, _ in elites]
 
         while len(new_population) < POP_SIZE:
-            parent1 = roulette_stochastic_acceptance(population, fitnesses)
-            parent2 = roulette_stochastic_acceptance(population, fitnesses)
+            parent1 = selection(population, fitnesses)
+            parent2 = selection(population, fitnesses)
             child1, child2 = sbx_crossover(parent1, parent2, eta=sbx_eta)
             new_population.extend([mutate(child1, mutation_std), mutate(child2, mutation_std)])
 
