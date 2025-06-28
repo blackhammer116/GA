@@ -34,7 +34,7 @@ def fitness(candidate):
 def initialize_population():
     return [np.random.uniform(0, 1, GENES).tolist() for _ in range(POP_SIZE)]
 
-# === Selection: Roulette-Wheel via Stochastic Acceptance ===
+# === Selection:
 def selection(population, fitnesses):
     pass
 
