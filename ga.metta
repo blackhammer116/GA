@@ -2,18 +2,10 @@
 ! (bind! random-sample (py-atom random.sample))
 ! (bind! zip (py-atom zip))
 ! (bind! max (py-atom max))
+! (bind! convert-to-list (py-atom ga_og.convert_to_list))
+; ! (bind! tournament_selection (py-atom ga_new.tournament_selection))
 
-; (= (fitness $c $a $b)
-;     (let* 
-;         (
-;             ($CC (superpose $c))
-;             ($AA (superpose $a))
-;             ($BB (superpose $b))
-;         )
-;         ()
-;     )
-; )
-; ! (bind! get-second (lambda ($x) (nth $x 1)))
+
 (= (index $list $ctr $index)
     (if (== $list ())
         ()
@@ -35,14 +27,32 @@
     (index $x 0 1)
 )
 
-(= (convertTolist <class 'zip'>) (empty))
-(= (convertTolist $x)
-    (let* (
-        ($head (car-atom $x))
-        ($tail (cdr-atom $x))
-        ($rest (convertTolist $tail))
+(= (cleanList $data)
+    (if (or (== $data ()) (== (get-metatype $data) Symbol))
+        ()  ; Base case: if the list is empty, return an empty list
+        (let*
+            (
+                ($head (car-atom $data))  ; Get the first element
+                ($tail (cdr-atom $data))  ; Get the rest of the list
+            )
+            (if (== $head <class 'zip'>)
+                (cleanList $tail)  ; Skip the <class 'zip'> marker
+                ((if (== (get-metatype $head) Grounded)
+                        $head  ; If the head is an atom, keep it
+                        (cleanList $head))  ; Recursively clean nested lists
+                    (cleanList $tail))  ; Process the rest of the list
+            )
         )
-        $head
+    )
+)
+
+(= (zipL $list1 $list2)
+    (if (or (== $list1 ()) (== $list2 ()))
+        ()  ; Base case: if either list is empty, return an empty list
+        ( 
+            ((car-atom $list1) (car-atom $list2))  ; Pair the first elements of both lists
+            (zipL (cdr-atom $list1) (cdr-atom $list2))  ; Recursively zip the rest of the lists
+        )
     )
 )
 
@@ -50,16 +60,18 @@
 (= (tornament-selection $P $F $k)
     (let*
         (
-            ($selected (random-sample (py-list (zip $P $F)) $k))
-            ; (() (println! $selected))
-            ; ($new (convertTolist $selected))
+            ; ($selected (random-sample (py-list (zip $P $F)) $k))
+            ($selected (random-sample (zip $P $F) $k))
+            (() (println! $selected))
+            ; ($new (cleanList (convert-to-list $selected)))
             ; (() (println! $new))
             ; ($ss (max $selected (get-second (collapse $selected))))
             ; ($s ((superpose ($selected))))
             ; (() (println! $ss))
         )
         ; $ss
-        $selected
+        ; $selected
+        ()
     )
 )
 
@@ -94,12 +106,3 @@
 ;     ((0.1 0.2 0.3 0.4) 0.5)  
 ;     ((0.5 0.6 0.7 0.8) 0.8)
 ;     ((0.9 0.1 0.2 0.3) 0.6)) $x (if (== (get-second $x) 0.8) $x ()) )
-
-
-!(match &self 
-    (, 
-        ([$x])
-        ([[$y]])
-    )
-    (println! $x)
-)

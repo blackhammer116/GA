@@ -23,6 +23,16 @@ INPUT_B = [0.8, 0.2, 1.0, 0.3, 0.9, 0.4, 0.6, 0.3]
 # INPUT_A = [1, 0.5, 0.0, 0.4, 1, 0.5, 0.5, 0.4]
 # INPUT_B = [0.8, 0.2, 1.0, 0.3, 1, 0.4, 0.6, 0.3]
 
+def convert_to_list(data):
+    if isinstance(data, list):  # Check if the data is a list
+        print("data: ", data)
+        if len(data) > 0 and str(data[0]) == "<class 'zip'>":  # Ensure it matches the string representation
+            return convert_to_list(data[1:])  # Skip the '<class 'zip'>' marker
+        new = tuple(convert_to_list(item) for item in data)
+        print("new: ", new)
+        return new   # Recursively process each element and convert to tuple
+    return data
+
 # === Fitness Function ===
 def fitness(candidate):
     emergence = [c - max(a, b) for c, a, b in zip(candidate, INPUT_A, INPUT_B)]
